@@ -75,7 +75,7 @@ class Redis implements Adapter
         $couterSkey = $this->toGatherKey(Counter::TYPE);
         $couterKeys = $this->redis->smembers($couterSkey);
         $metricKeys = array_merge($gaugeKeys, $couterKeys, [$gaugeSkey, $couterSkey]);
-        $this->redis->del($metricKeys);
+        $metricKeys && $this->redis->del($metricKeys);
     }
 
     /**
