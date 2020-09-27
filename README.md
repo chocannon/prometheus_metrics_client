@@ -56,4 +56,7 @@ Metrics::push();
 
 // 打印全部指标,供 prometheus 主动拉取
 Metrics::print();
+
+// 删除全部数据指标
+Metrics::flush();
 ```
