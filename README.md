@@ -22,6 +22,10 @@ $config = [
 
 Pushgateway 使用默认OP提供的地址，支持应用内配置环境变量 *METRICS_PUSH_GATEWAY_HOST* 更改该地址
 
+## 预留关键字
+
+* *lk_app_name*
+
 ## 使用示例
 
 ```php
