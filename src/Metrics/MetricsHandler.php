@@ -11,6 +11,9 @@ use Linkdoc\Metrics\Core\CollectorRegistry;
 
 class MetricsHandler
 {
+    const METRICS_NS = '';
+    const LK_APP_KEY = 'lk_app_name';
+
     /**
      * @var CollectorRegistry
      */
@@ -58,8 +61,9 @@ class MetricsHandler
      */
     public function counter(string $name, array $labels = [], int $count = 1, string $help = ''): void
     {
+        $labels  = self::appendDefaultLabels($labels);
         $counter = $this->getRegistry()->getOrRegisterCounter(
-            LINKDOC_APP_NAME, $name, $help, array_keys($labels)
+            self::METRICS_NS, $name, $help, array_keys($labels)
         );
         $counter->incBy($count, array_values($labels));
     }
@@ -75,8 +79,9 @@ class MetricsHandler
      */
     public function gauge(string $name, array $labels = [], float $value = 1, string $help = ''): void
     {
-        $gauge = $this->getRegistry()->getOrRegisterGauge(
-            LINKDOC_APP_NAME, $name, $help, array_keys($labels)
+        $labels = self::appendDefaultLabels($labels);
+        $gauge  = $this->getRegistry()->getOrRegisterGauge(
+            self::METRICS_NS, $name, $help, array_keys($labels)
         );
         $gauge->set($value, array_values($labels));
     }
@@ -92,8 +97,9 @@ class MetricsHandler
      */
     public function gaugeInc(string $name, array $labels = [], float $value = 1, string $help = ''): void
     {
-        $gauge = $this->getRegistry()->getOrRegisterGauge(
-            LINKDOC_APP_NAME, $name, $help, array_keys($labels)
+        $labels = self::appendDefaultLabels($labels);
+        $gauge  = $this->getRegistry()->getOrRegisterGauge(
+            self::METRICS_NS, $name, $help, array_keys($labels)
         );
         $gauge->incBy($value, array_values($labels));
     }
@@ -109,8 +115,9 @@ class MetricsHandler
      */
     public function gaugeDec(string $name, array $labels = [], float $value = 1, string $help = ''): void
     {
-        $gauge = $this->getRegistry()->getOrRegisterGauge(
-            LINKDOC_APP_NAME, $name, $help, array_keys($labels)
+        $labels = self::appendDefaultLabels($labels);
+        $gauge  = $this->getRegistry()->getOrRegisterGauge(
+            self::METRICS_NS, $name, $help, array_keys($labels)
         );
         $gauge->decBy($value, array_values($labels));
     }
@@ -168,14 +175,14 @@ class MetricsHandler
      */
     public function httpRequestsTotal(string $path, string $method, string $status = 'success', array $extLabels = []): void
     {
-        $labels = ['path', 'method', 'status'];
-        $values = [$path, $method, $status];
+        $labels = [self::LK_APP_KEY, 'path', 'method', 'status'];
+        $values = [LINKDOC_APP_NAME, $path, $method, $status];
         if ($extLabels) {
             $labels = array_merge($labels, array_keys($extLabels));
             $values = array_merge($labels, array_values($extLabels));
         }
         $counter = $this->getRegistry()->getOrRegisterCounter(
-            LINKDOC_APP_NAME, 'http_requests_total', 'http_requests_total', $labels
+            self::METRICS_NS, 'http_requests_total', 'http_requests_total', $labels
         );
         $counter->inc($values);
     }
@@ -191,11 +198,11 @@ class MetricsHandler
     public function httpInprogressRequests(string $path, string $method, bool $state = true): void
     {
         static $guidMap = [];
-        $labels = ['path', 'method'];
-        $values = [$path, $method];
+        $labels = [self::LK_APP_KEY, 'path', 'method'];
+        $values = [LINKDOC_APP_NAME, $path, $method];
         $guid   = md5($method . $path);
         $gauge  = $this->getRegistry()->getOrRegisterGauge(
-            LINKDOC_APP_NAME, 'http_inprogress_requests', 'http_inprogress_requests', $labels
+            self::METRICS_NS, 'http_inprogress_requests', 'http_inprogress_requests', $labels
         );
         if ($state && !isset($guidMap[$guid])) {
             $guidMap[$guid] = $values;
@@ -224,5 +231,18 @@ class MetricsHandler
             self::$registry = new CollectorRegistry(new Redis());
         }
         return self::$registry;
+    }
+
+
+    /**
+     * 追加默认标签
+     *
+     * @param array $labels
+     * @return array
+     */
+    private static function appendDefaultLabels(array $labels): array
+    {
+        $labels[self::LK_APP_KEY] = LINKDOC_APP_NAME;
+        return $labels;
     }
 }
