@@ -11,7 +11,6 @@ use Linkdoc\Metrics\Core\CollectorRegistry;
 
 class MetricsHandler
 {
-    const METRICS_NS = '';
     const LK_APP_KEY = 'lk_app_name';
 
     /**
@@ -63,7 +62,7 @@ class MetricsHandler
     {
         $labels  = self::appendDefaultLabels($labels);
         $counter = $this->getRegistry()->getOrRegisterCounter(
-            self::METRICS_NS, $name, $help, array_keys($labels)
+            LINKDOC_APP_NAME, $name, $help, array_keys($labels)
         );
         $counter->incBy($count, array_values($labels));
     }
@@ -81,7 +80,7 @@ class MetricsHandler
     {
         $labels = self::appendDefaultLabels($labels);
         $gauge  = $this->getRegistry()->getOrRegisterGauge(
-            self::METRICS_NS, $name, $help, array_keys($labels)
+            LINKDOC_APP_NAME, $name, $help, array_keys($labels)
         );
         $gauge->set($value, array_values($labels));
     }
@@ -99,7 +98,7 @@ class MetricsHandler
     {
         $labels = self::appendDefaultLabels($labels);
         $gauge  = $this->getRegistry()->getOrRegisterGauge(
-            self::METRICS_NS, $name, $help, array_keys($labels)
+            LINKDOC_APP_NAME, $name, $help, array_keys($labels)
         );
         $gauge->incBy($value, array_values($labels));
     }
@@ -117,7 +116,7 @@ class MetricsHandler
     {
         $labels = self::appendDefaultLabels($labels);
         $gauge  = $this->getRegistry()->getOrRegisterGauge(
-            self::METRICS_NS, $name, $help, array_keys($labels)
+            LINKDOC_APP_NAME, $name, $help, array_keys($labels)
         );
         $gauge->decBy($value, array_values($labels));
     }
@@ -182,7 +181,7 @@ class MetricsHandler
             $values = array_merge($labels, array_values($extLabels));
         }
         $counter = $this->getRegistry()->getOrRegisterCounter(
-            self::METRICS_NS, 'http_requests_total', 'http_requests_total', $labels
+            LINKDOC_APP_NAME, 'http_requests_total', 'http_requests_total', $labels
         );
         $counter->inc($values);
     }
@@ -202,7 +201,7 @@ class MetricsHandler
         $values = [LINKDOC_APP_NAME, $path, $method];
         $guid   = md5($method . $path);
         $gauge  = $this->getRegistry()->getOrRegisterGauge(
-            self::METRICS_NS, 'http_inprogress_requests', 'http_inprogress_requests', $labels
+            LINKDOC_APP_NAME, 'http_inprogress_requests', 'http_inprogress_requests', $labels
         );
         if ($state && !isset($guidMap[$guid])) {
             $guidMap[$guid] = $values;

@@ -40,7 +40,7 @@ abstract class Collector
     public function __construct(Adapter $storageAdapter, $namespace, $name, $help, $labels = [])
     {
         $this->storageAdapter = $storageAdapter;
-        $metricName = ($namespace ? $namespace . '_' : '') . $name;
+        $metricName = ($namespace ? strtolower($namespace) . '_' : '') . $name;
         if (!preg_match(self::RE_METRIC_LABEL_NAME, $metricName)) {
             throw new InvalidArgumentException("Invalid metric name: '" . $metricName . "'");
         }

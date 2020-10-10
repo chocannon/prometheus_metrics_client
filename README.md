@@ -9,7 +9,11 @@
 - ext-curl
 - ext-redis
 
-## 全局变量
+## 依赖常量
+
+依赖自定义常量 *LINKDOC_APP_NAME* ，该常量值会作为指标名称前缀，需满足 *变量命名规范*
+
+## 环境变量
 
 默认读取环境变量 *REDIS_HOST*，*REDIS_PORT*， *REDIS_PASSWORD*，支持参数传入
 ```php
@@ -24,11 +28,14 @@ Pushgateway 使用默认OP提供的地址，支持应用内配置环境变量 *M
 
 ## 预留关键字
 
-* *lk_app_name*
+* *lk_app_name* 该关键字会作为默认标签加入到指标中
 
 ## 使用示例
 
 ```php
+defined('LINKDOC_APP_NAME') or define('LINKDOC_APP_NAME', 'TEST_APP');
+putenv('REDIS_HOST=127.0.0.1');
+
 use Linkdoc\Metrics\Metrics;
 
 // 配置redis适配器
@@ -64,3 +71,21 @@ Metrics::print();
 // 删除全部数据指标
 Metrics::flush();
 ```
+
+## 结果示例
+
+```
+# HELP test_app_cpu_usage_rate 
+# TYPE test_app_cpu_usage_rate gauge
+test_app_cpu_usage_rate{ip="127.0.0.1",lk_app_name="TEST_APP"} 0.67
+# HELP test_app_handle_jobs_total 
+# TYPE test_app_handle_jobs_total counter
+test_app_handle_jobs_total{script="/oneTime",lk_app_name="TEST_APP"} 1
+# HELP test_app_http_inprogress_requests http_inprogress_requests
+# TYPE test_app_http_inprogress_requests gauge
+test_app_http_inprogress_requests{lk_app_name="TEST_APP",path="/metrics",method="GET"} 0
+# HELP test_app_http_requests_total http_requests_total
+# TYPE test_app_http_requests_total counter
+test_app_http_requests_total{lk_app_name="TEST_APP",path="/metrics",method="GET",status="success"} 1
+```
+
