@@ -11,7 +11,8 @@ use Linkdoc\Metrics\Core\CollectorRegistry;
 
 class MetricsHandler
 {
-    const LK_APP_KEY = 'lk_app_name';
+    const LK_APP_KEY    = 'lk_app_name';
+    const PUSH_JOB_NAME = 'active_push_metrics';
 
     /**
      * @var CollectorRegistry
@@ -146,7 +147,11 @@ class MetricsHandler
             $address = getenv('METRICS_PUSH_GATEWAY_HOST') ?: null;
             $gateway = new PushGateway($address);
         }
-        $gateway->pushAdd($this->getRegistry(), 'active_push_metrics', ['instance' => LINKDOC_APP_NAME]);
+        $gateway->pushAdd(
+            $this->getRegistry(),
+            self::PUSH_JOB_NAME,
+            ['instance' => strtolower(LINKDOC_APP_NAME)]
+        );
     }
 
     /**
