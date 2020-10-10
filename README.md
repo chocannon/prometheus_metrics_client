@@ -19,8 +19,8 @@
 ```php
 $config = [
 	'REDIS_HOST'     => '127.0.0.1',
-	'REDIS_PORT'     => 6379,
-	'REDIS_PASSWORD' => null,
+	'REDIS_PORT'     => 6379, // 默认 6379
+	'REDIS_PASSWORD' => null, // 默认 null
 ];
 ```
 
